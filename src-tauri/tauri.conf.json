@@ -25,6 +25,14 @@
       "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: data:"
     }
   },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/kingsleyramos/nameshift/releases/latest/download/latest.json"
+      ],
+      "pubkey": "UPDATER_PUBKEY_PLACEHOLDER_RUN_pnpm_tauri_signer_generate"
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",

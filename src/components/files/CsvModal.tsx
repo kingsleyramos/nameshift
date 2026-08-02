@@ -101,7 +101,7 @@ export default function CsvModal({ onClose }: { onClose: () => void }) {
       aria-modal="true"
       aria-label={strings.csvTitle}
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgb(0 0 0 / 0.25)' }}
+      style={{ background: 'var(--scrim)' }}
       onKeyDown={(event) => {
         if (event.key === 'Escape') onClose();
       }}
@@ -255,8 +255,8 @@ export default function CsvModal({ onClose }: { onClose: () => void }) {
               void commands.csvApply(matches);
               onClose();
             }}
-            className="h-7 rounded-md px-3 text-[13px] font-semibold text-white disabled:opacity-40"
-            style={{ background: 'var(--accent)' }}
+            className="h-7 rounded-md px-3 text-[13px] font-semibold disabled:opacity-40"
+            style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
           >
             {strings.csvApplyChanges(applyCount)}
           </button>

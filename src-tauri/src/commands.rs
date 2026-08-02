@@ -196,6 +196,7 @@ pub fn remove_items(app: AppHandle, state: State<AppState>, ids: Vec<Uuid>) {
             }
         }
         shared.state.files.retain(|item| !id_set.contains(&item.id));
+        shared.release_unused_scopes();
         shared.invalidate_disk_caches();
         watch_glue::sync_watchers(&app, shared);
     });
@@ -210,6 +211,7 @@ pub fn remove_watched_folder(app: AppHandle, state: State<AppState>, id: Uuid) {
             .watched_folders
             .retain(|folder| folder.id != id);
         shared.state.files.retain(|item| item.folder_id != Some(id));
+        shared.release_unused_scopes();
         shared.invalidate_disk_caches();
         watch_glue::sync_watchers(&app, shared);
     });
@@ -222,6 +224,7 @@ pub fn clear_all(app: AppHandle, state: State<AppState>) {
         shared.state.files.clear();
         shared.state.watched_folders.clear();
         shared.state.excluded_paths.clear();
+        shared.release_unused_scopes();
         shared.invalidate_disk_caches();
         watch_glue::sync_watchers(&app, shared);
     });
@@ -433,6 +436,7 @@ fn apply_delta(shared: &mut crate::app_state::Shared, delta: UndoDelta) {
             shared.state.watched_folders = watched_folders;
             shared.state.excluded_paths = excluded_paths;
             shared.invalidate_disk_caches();
+            shared.release_unused_scopes();
         }
     }
 }

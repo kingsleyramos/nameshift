@@ -16,7 +16,7 @@ export default function Dialogs() {
       role="dialog"
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgb(0 0 0 / 0.25)' }}
+      style={{ background: 'var(--scrim)' }}
       onKeyDown={(event) => {
         if (event.key === 'Escape') {
           setUi({ confirm: null, alert: null });
@@ -52,9 +52,10 @@ export default function Dialogs() {
                   setUi({ confirm: null });
                   action();
                 }}
-                className="h-7 rounded-md px-3 text-[13px] font-semibold text-white"
+                className="h-7 rounded-md px-3 text-[13px] font-semibold"
                 style={{
                   background: confirm.destructive ? 'var(--revert-action)' : 'var(--accent)',
+                  color: 'var(--on-accent)',
                 }}
               >
                 {confirm.confirmLabel}
@@ -66,8 +67,8 @@ export default function Dialogs() {
               onClick={() => {
                 setUi({ alert: null });
               }}
-              className="h-7 rounded-md px-3 text-[13px] font-semibold text-white"
-              style={{ background: 'var(--accent)' }}
+              className="h-7 rounded-md px-3 text-[13px] font-semibold"
+              style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
             >
               OK
             </button>

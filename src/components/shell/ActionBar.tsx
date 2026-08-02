@@ -38,7 +38,7 @@ export default function ActionBar() {
         className="flex h-6 items-center gap-1 rounded-full px-2.5 text-[12px]"
         style={
           active
-            ? { background: 'var(--accent)', color: '#fff' }
+            ? { background: 'var(--accent)', color: 'var(--on-accent)' }
             : {
                 color: options.warning ? 'var(--warning-text)' : 'var(--link-text)',
               }
@@ -160,8 +160,8 @@ export default function ActionBar() {
         }}
         disabled={!canApply}
         title={renameTooltip}
-        className="h-7 rounded-full px-4 text-[13px] font-semibold text-white disabled:opacity-40"
-        style={{ background: 'var(--accent)' }}
+        className="h-7 rounded-full px-4 text-[13px] font-semibold disabled:opacity-40"
+        style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
       >
         {strings.renameButton(renameCount, isFolders)}
       </button>

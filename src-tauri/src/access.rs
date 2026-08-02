@@ -31,6 +31,11 @@ pub trait FileAccess: Send + Sync {
     fn covers(&self, _path: &Path) -> bool {
         true
     }
+
+    /// Release scopes that no longer serve any `needed` path — the OS caps
+    /// simultaneously-open scoped resources, so scopes for items removed
+    /// from the list must not accumulate (§10.1). No-op for plain paths.
+    fn retain_scopes(&self, _needed: &[PathBuf]) {}
 }
 
 /// Plain-path implementation (default feature `channel-direct`, also

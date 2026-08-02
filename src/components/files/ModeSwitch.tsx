@@ -22,7 +22,7 @@ export default function ModeSwitch() {
       className="rounded-md px-2.5 py-1 text-[12px] font-medium"
       style={
         mode === id
-          ? { background: 'var(--accent)', color: '#fff' }
+          ? { background: 'var(--accent)', color: 'var(--on-accent)' }
           : { color: 'var(--text-secondary)' }
       }
     >

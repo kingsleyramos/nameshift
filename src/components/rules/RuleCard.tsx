@@ -257,7 +257,7 @@ function RuleFields({
               className="rounded-md border px-2 py-0.5 text-[12px]"
               style={
                 rule.caseStyle === style
-                  ? { background: 'var(--accent)', color: '#fff', borderColor: 'var(--accent)' }
+                  ? { background: 'var(--accent)', color: 'var(--on-accent)', borderColor: 'var(--accent)' }
                   : { borderColor: 'var(--separator)', color: 'var(--text-primary)' }
               }
             >
@@ -299,7 +299,7 @@ function RuleFields({
                 className="rounded-md border px-2 py-0.5 text-[12px]"
                 style={
                   rule.numberPosition === value
-                    ? { background: 'var(--accent)', color: '#fff', borderColor: 'var(--accent)' }
+                    ? { background: 'var(--accent)', color: 'var(--on-accent)', borderColor: 'var(--accent)' }
                     : { borderColor: 'var(--separator)', color: 'var(--text-primary)' }
                 }
               >
