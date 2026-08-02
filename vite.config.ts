@@ -23,7 +23,7 @@ export default defineConfig({
   build: {
     // Floor targets: Big Sur WKWebView, WebView2 Evergreen, webkit2gtk-4.1.
     target: process.env.TAURI_ENV_PLATFORM === 'windows' ? 'chrome105' : 'safari14',
-    minify: process.env.TAURI_ENV_DEBUG ? false : 'esbuild',
+    minify: process.env.TAURI_ENV_DEBUG ? false : 'oxc',
     sourcemap: !!process.env.TAURI_ENV_DEBUG,
   },
 
