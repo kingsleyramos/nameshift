@@ -91,3 +91,10 @@ pnpm tauri build --no-default-features --features channel-flathub   # manifest i
 Clippy `-D warnings`, rustfmt, ESLint, tsc; `crates/engine` ≥ 85% line
 coverage (cargo-llvm-cov); frontend ≥ 80% lines (vitest); property tests at
 256 cases; cargo-deny advisories/licenses.
+
+The release-mode frontend build (`pnpm build`) and version sync
+(`pnpm check:versions`) run in both `pnpm verify` and CI. The debug bundle
+smoke sets `minify:false`, so only `pnpm build` exercises the production
+minifier — keep it in the gate. Each non-default channel
+(`channel-mas`/`-msstore`/`-flathub`) is compile-checked on its target OS,
+because its code is gated behind `cfg(feature)` and no other job builds it.

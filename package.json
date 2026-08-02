@@ -20,7 +20,8 @@
     "test:watch": "vitest",
     "tauri": "tauri",
     "e2e": "pnpm --dir e2e test",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && cargo fmt --check && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace"
+    "check:versions": "node scripts/check-versions.mjs",
+    "verify": "pnpm lint && pnpm typecheck && pnpm check:versions && pnpm build && pnpm test && cargo fmt --check && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
