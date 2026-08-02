@@ -13,3 +13,9 @@ serde_json.workspace = true
 uuid.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+unicode-normalization = "0.1.25"
+unicode-segmentation = "1.13.3"
+fancy-regex = "0.19.0"
+icu_properties = "2.2.0"
+ts-rs = { version = "12.0.1", features = ["uuid-impl", "chrono-impl", "serde-json-impl"] }
+chrono = { version = "0.4.45", features = ["serde"] }
