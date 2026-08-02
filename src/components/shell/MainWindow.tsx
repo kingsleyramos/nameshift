@@ -2,6 +2,7 @@
 // bottom action bar, overlays, dialogs, banner, and the global listeners.
 
 import { useCallback, useEffect } from 'react';
+import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import Toolbar from './Toolbar';
 import ActionBar from './ActionBar';
@@ -46,6 +47,9 @@ export default function MainWindow() {
       }),
       events.onOpenPaths((payload) => {
         void commands.importPaths(payload.paths);
+      }),
+      listen<string>('menu', (event) => {
+        handleMenuAction(event.payload);
       }),
     ];
     return () => {
@@ -135,6 +139,106 @@ export default function MainWindow() {
       <Dialogs />
     </div>
   );
+}
+
+/** Whether keyboard focus sits in a text-editing element — those keep the
+ * OS text-editing behavior for Undo/Redo/Select All (§15). */
+function focusIsTextInput(): boolean {
+  const active = document.activeElement;
+  return (
+    active instanceof HTMLInputElement ||
+    active instanceof HTMLTextAreaElement ||
+    (active instanceof HTMLElement && active.isContentEditable)
+  );
+}
+
+/** Frontend halves of the §15 menu items. */
+function handleMenuAction(action: string) {
+  const ui = useUiStore.getState();
+  switch (action) {
+    case 'pick-files':
+      void commands.pickAndImport();
+      break;
+    case 'revert': {
+      // The File-menu revert mirrors the action bar's confirmed flow.
+      const revertPreview = useAppStore.getState().revertPreview;
+      if (!revertPreview || revertPreview.restorableRenameCount === 0) break;
+      const files = revertPreview.restorableFileCount;
+      const renames = revertPreview.restorableRenameCount;
+      const versions = revertPreview.newerSnapshotCount + 1;
+      ui.showConfirm({
+        title: strings.revertConfirmTitle,
+        message: strings.revertConfirmMessage(
+          files,
+          renames,
+          versions,
+          revertPreview.newerSnapshotCount,
+        ),
+        confirmLabel: strings.revertConfirmButton,
+        destructive: true,
+        onConfirm: () => {
+          void commands.revertSelected();
+        },
+      });
+      break;
+    }
+    case 'rename-by-csv':
+      ui.set({ csvModalOpen: true });
+      break;
+    case 'import-presets':
+      void commands.importPresets();
+      break;
+    case 'export-presets':
+      void commands.exportPresets();
+      break;
+    // execCommand is deprecated but remains the only programmatic bridge to
+    // the webview's NATIVE text undo/redo/select — exactly what §15 requires
+    // when focus sits in a text field.
+    case 'undo':
+      if (focusIsTextInput()) {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        document.execCommand('undo');
+      } else {
+        void commands.undo();
+      }
+      break;
+    case 'redo':
+      if (focusIsTextInput()) {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        document.execCommand('redo');
+      } else {
+        void commands.redo();
+      }
+      break;
+    case 'select-all': {
+      if (focusIsTextInput()) {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        document.execCommand('selectAll');
+        break;
+      }
+      // ⌘A selects ROWS, never checkboxes (§15).
+      const entries = useAppStore.getState().preview?.entries ?? [];
+      ui.set({
+        rowSelection: new Set(entries.map((entry) => entry.id)),
+        focusedRow: entries[0]?.id ?? null,
+      });
+      break;
+    }
+    case 'clear-manual-edits':
+      void commands.clearAllOverrides();
+      break;
+    case 'find':
+      document.querySelector<HTMLInputElement>('input[data-filter-field]')?.focus();
+      break;
+    case 'toggle-inspector':
+      ui.set({ inspectorOpen: !ui.inspectorOpen });
+      break;
+    case 'inline-diff':
+      ui.set({ inlineDiffView: !ui.inlineDiffView });
+      break;
+    default:
+      break;
+  }
 }
 
 function SideTabs() {
