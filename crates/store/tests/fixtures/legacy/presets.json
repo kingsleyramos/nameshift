@@ -1,0 +1,17 @@
+[
+  {
+    "id": "7B4C2A10-53E5-4D2A-9C6F-2E8B1F0A9D11",
+    "name": "Photo import",
+    "rules": [
+      {
+        "caseSensitive": true, "caseStyle": "lowercase",
+        "id": "0A1B2C3D-4E5F-6071-8293-A4B5C6D7E8F9",
+        "includesExtension": false, "isEnabled": true,
+        "kind": "template", "numberPadding": 3, "numberPosition": "after",
+        "numberStart": 1, "removesEmoji": false, "replacement": "",
+        "stripsDiacritics": false, "text": "{created} {name} {n:3}"
+      }
+    ],
+    "trimsWhitespace": true
+  }
+]
