@@ -19,3 +19,4 @@ fancy-regex = "0.19.0"
 icu_properties = "2.2.0"
 ts-rs = { version = "12.0.1", features = ["uuid-impl", "chrono-impl", "serde-json-impl"] }
 chrono = { version = "0.4.45", features = ["serde"] }
+icu_collator = "2.2.1"
