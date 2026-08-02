@@ -1,0 +1,16 @@
+[package]
+name = "nameshift-store"
+description = "Session, history, and preset persistence for Name Shift"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+nameshift-engine = { path = "../engine", version = "2.0.0" }
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
