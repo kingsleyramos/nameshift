@@ -62,6 +62,14 @@ jobs:
       - name: Frontend typecheck
         run: pnpm typecheck
 
+      - name: Version sync (package.json is the source)
+        run: pnpm check:versions
+
+      - name: Frontend production build
+        # Release-mode `vite build` runs the real minifier; the debug bundle
+        # below sets minify:false and never would. Fast, always-run guard.
+        run: pnpm build
+
       - name: Frontend tests
         run: pnpm test -- --coverage
 
@@ -120,6 +128,45 @@ jobs:
       - name: Run E2E (Windows)
         if: runner.os == 'Windows'
         run: pnpm e2e
+
+  channels:
+    name: Channel compile (${{ matrix.channel }})
+    # Each non-default channel gates OS-specific code behind cfg(feature),
+    # which nothing else compiles. Compile-check each on its target OS so a
+    # break in MAS/MSStore/Flathub surfaces on PR, not at release.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            channel: channel-mas
+          - os: windows-latest
+            channel: channel-msstore
+          - os: ubuntu-latest
+            channel: channel-flathub
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: '. -> target'
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build frontend (tauri-build reads the dist dir)
+        run: pnpm build
+      - name: Compile-check channel
+        run: cargo check -p nameshift --no-default-features --features ${{ matrix.channel }}
 
   deny:
     name: cargo-deny
