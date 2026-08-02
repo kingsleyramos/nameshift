@@ -1,0 +1,17 @@
+[
+  {
+    "date" : "2026-05-11T09:30:00Z",
+    "entries" : [
+      {
+        "from" : "/Users/demo/Photos/Iceland",
+        "to" : "/Users/demo/Photos/Iceland 2026"
+      },
+      {
+        "from" : "/Users/demo/Photos/Iceland 2026/IMG_0001.jpg",
+        "to" : "/Users/demo/Photos/Iceland 2026/glacier-001.jpg"
+      }
+    ],
+    "id" : "3C1FA9B2-77D4-4E1B-8A46-90D3B1E2C4F5",
+    "summary" : "Folders · Suffix “ 2026” · Manual edits"
+  }
+]
