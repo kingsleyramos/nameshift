@@ -20,3 +20,4 @@ e2e/logs/
 # Editors
 .idea/
 *.swp
+bindings/
