@@ -41,7 +41,7 @@ pub fn stat_modified(path: &Path) -> Option<SystemTime> {
 /// Size in bytes from stat (files only; directories return `None`).
 pub fn stat_size(path: &Path) -> Option<u64> {
     let metadata = std::fs::metadata(path).ok()?;
-    metadata.is_file().then(|| metadata.len())
+    metadata.is_file().then_some(metadata.len())
 }
 
 /// Humanized kind from the extension — the Linux primary source and the
