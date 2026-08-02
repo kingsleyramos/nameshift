@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Name Shift
+Comment=Bulk-rename files and folders with live preview and full undo history
+Exec=nameshift
+Icon=io.github.kingsleyramos.NameShift
+Terminal=false
+Type=Application
+Categories=Utility;FileTools;
+Keywords=rename;batch;files;folders;

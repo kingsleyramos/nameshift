@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Name Shift renames files and folders you choose, including items on your Desktop.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Name Shift renames files and folders you choose, including items in your Documents folder.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Name Shift renames files and folders you choose, including items in your Downloads folder.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Name Shift renames files and folders you choose, including items on external drives.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Name Shift renames files and folders you choose, including items on network drives.</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Files and Folders</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.item</string>
+				<string>public.folder</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
