@@ -33,16 +33,22 @@ impl FolderWatcher {
         root: &Path,
         on_change: impl Fn() + Send + 'static,
     ) -> notify::Result<FolderWatcher> {
-        // Backends report canonicalized paths (macOS: /var → /private/var);
-        // filter against the canonical root or events would never match.
-        let root_filter: PathBuf = root.canonicalize().unwrap_or_else(|_| root.to_path_buf());
+        // Backends report event paths in platform-specific forms: macOS
+        // canonicalizes (/var → /private/var), while Windows keeps the plain
+        // path but `canonicalize()` prepends a \\?\ verbatim prefix the events
+        // never carry. Match against both the canonical and the original root
+        // so events are recognized on every OS.
+        let canonical_root: PathBuf = root.canonicalize().unwrap_or_else(|_| root.to_path_buf());
+        let original_root: PathBuf = root.to_path_buf();
         let mut debouncer = new_debouncer(DEBOUNCE, None, move |result: DebounceEventResult| {
             let Ok(events) = result else { return };
             let touches_root = events.iter().any(|event| {
-                event
-                    .paths
-                    .iter()
-                    .any(|p| p.starts_with(&root_filter) || *p == root_filter)
+                event.paths.iter().any(|p| {
+                    p.starts_with(&canonical_root)
+                        || *p == canonical_root
+                        || p.starts_with(&original_root)
+                        || *p == original_root
+                })
             });
             if touches_root {
                 on_change();
