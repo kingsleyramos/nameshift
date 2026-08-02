@@ -3,6 +3,40 @@
 
 use crate::rule::{CaseStyle, NumberPosition, RenameRule, RuleKind};
 
+/// Per-move error: phase-1 staging failure (§A).
+pub fn couldnt_rename(name: &str, reason: &str) -> String {
+    format!("Couldn’t rename “{name}”: {reason}")
+}
+
+/// Per-move error: phase-2 commit failure (§A).
+pub fn couldnt_rename_to(from: &str, to: &str, reason: &str) -> String {
+    format!("Couldn’t rename “{from}” to “{to}”: {reason}")
+}
+
+/// Per-move error: a cancelled move that could be neither rolled back nor
+/// completed — the file is intact under its temp name (§A).
+pub fn couldnt_finish_stranded(name: &str, temp: &str) -> String {
+    format!("Couldn’t finish renaming “{name}”; it is safe at “{temp}”.")
+}
+
+/// Title for batch-error alerts (§A).
+pub const SOME_RENAMES_COULDNT_COMPLETE: &str = "Some renames couldn’t complete";
+
+/// Revert-preview status label (§A).
+pub fn revert_status_label(status: crate::revert::RevertStatus) -> &'static str {
+    match status {
+        crate::revert::RevertStatus::Ok => "Will be restored",
+        crate::revert::RevertStatus::Missing => "Not found (nothing to restore)",
+        crate::revert::RevertStatus::NameTaken => {
+            "The original name is taken by a different file — kept as is."
+        }
+    }
+}
+
+/// Tooltip for the `Missing` revert status (§A).
+pub const REVERT_MISSING_TOOLTIP: &str =
+    "It may have been moved or deleted since this version was applied. This rename will be skipped.";
+
 /// One-line rule summary (§4.2), used in snapshot summaries and rule-card
 /// subtitles.
 pub fn rule_summary(rule: &RenameRule) -> String {
