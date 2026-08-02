@@ -96,7 +96,7 @@ pub struct FsDirectoryLister;
 
 impl DirectoryLister for FsDirectoryLister {
     fn list(&self, directory: &Path) -> Vec<String> {
-        std::fs::read_dir(directory)
+        std::fs::read_dir(crate::platform::win_long_path(directory))
             .map(|entries| {
                 entries
                     .filter_map(Result::ok)

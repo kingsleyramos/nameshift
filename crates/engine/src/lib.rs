@@ -7,9 +7,12 @@
 
 pub mod copy;
 pub mod diffkey;
+pub mod execute;
 pub mod item;
+pub mod plan;
 pub mod platform;
 pub mod preview;
+pub mod revert;
 pub mod rule;
 pub mod serde_util;
 pub mod sort;
@@ -18,13 +21,22 @@ pub mod tokens;
 pub mod validate;
 
 pub use diffkey::{diff_key, fold_name};
+pub use execute::{
+    perform_moves_hierarchical, recover_orphaned_temp_files, rewrite_live_paths,
+    rewrite_path_prefix, MoveOutcome, TEMP_PREFIX,
+};
 pub use item::{FileItem, FileSortKey, FilterMode, ListMode, WatchedFolder};
+pub use plan::{apply_plan, build_plan, ApplyOutcome, ApplyPlan};
 pub use platform::{
     host_profile, HostOs, PlatformProfile, LINUX_PROFILE, MACOS_PROFILE, WINDOWS_PROFILE,
 };
 pub use preview::{
     compute_preview, rule_derived_name, DirectoryLister, DirectoryNameCache, FsDirectoryLister,
     Preview, PreviewCounts, PreviewEntry, RuleImpact,
+};
+pub use revert::{
+    compute_revert_preview, record_snapshot, revert_through, RevertEntry, RevertOutcome,
+    RevertPreview, RevertStatus,
 };
 pub use rule::{
     apply_rule, split_name, trimmed_name, CaseStyle, NumberPosition, RenameRule, RuleKind,
