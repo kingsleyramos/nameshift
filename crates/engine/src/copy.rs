@@ -46,3 +46,63 @@ pub const SUMMARY_TRIM_SPACES: &str = "Trim spaces";
 pub const SUMMARY_MANUAL_EDITS: &str = "Manual edits";
 /// Prepended to snapshot summaries recorded in Folders mode (§8.1).
 pub const SUMMARY_FOLDERS_PREFIX: &str = "Folders";
+
+/// Human-readable problem message (§A), varying per OS where the rules do.
+pub fn problem_message(problem: crate::validate::Problem, os: crate::platform::HostOs) -> String {
+    use crate::platform::HostOs;
+    use crate::validate::Problem;
+    match problem {
+        Problem::EmptyName => "The new name would be empty.".to_string(),
+        Problem::InvalidCharacters => match os {
+            HostOs::MacOs => "The new name contains “/” or “:”, which aren’t allowed.".to_string(),
+            HostOs::Windows => {
+                "The new name contains characters Windows doesn’t allow: < > : \" / \\ | ? *"
+                    .to_string()
+            }
+            HostOs::Linux => "The new name contains “/”, which isn’t allowed.".to_string(),
+        },
+        Problem::NameTooLong => match os {
+            HostOs::MacOs => "The new name is longer than macOS allows (255 bytes).".to_string(),
+            HostOs::Windows => {
+                "The new name is longer than Windows allows (255 characters).".to_string()
+            }
+            HostOs::Linux => {
+                "The new name is longer than this system allows (255 bytes).".to_string()
+            }
+        },
+        Problem::ReservedName => "This name is reserved by Windows and can’t be used.".to_string(),
+        Problem::EndsWithDotOrSpace => "Windows names can’t end with a dot or a space.".to_string(),
+        Problem::DuplicateTarget => {
+            "Two or more files would end up with the same name.".to_string()
+        }
+        Problem::ExistingFileCollision => {
+            "A different file with this name already exists in the folder.".to_string()
+        }
+        Problem::UnrenamableName => {
+            "This name uses an encoding Name Shift can’t edit safely.".to_string()
+        }
+        Problem::NoFolderPermission => {
+            "Name Shift doesn’t have permission to rename items in this folder.".to_string()
+        }
+    }
+}
+
+/// Why Apply is disabled (§A), shown beside the primary button when items
+/// exist but `can_apply` is false. `is_folders` selects the mode noun.
+pub fn apply_disabled_reason(
+    conflict_count: u32,
+    change_count: u32,
+    is_folders: bool,
+) -> Option<String> {
+    if conflict_count > 0 {
+        let plural = if conflict_count == 1 { "" } else { "s" };
+        return Some(format!("Fix or skip the naming conflict{plural} to rename"));
+    }
+    if change_count == 0 {
+        let noun = if is_folders { "folder" } else { "file" };
+        return Some(format!(
+            "Add a rule that changes at least one included {noun}"
+        ));
+    }
+    None
+}
