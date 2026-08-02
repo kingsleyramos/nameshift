@@ -1,0 +1,14 @@
+[package]
+name = "nameshift-metadata"
+description = "Per-OS file metadata providers for Name Shift tokens and the inspector"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+nameshift-engine = { path = "../engine" }
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
