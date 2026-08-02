@@ -21,3 +21,6 @@ e2e/logs/
 .idea/
 *.swp
 bindings/
+
+# ts-rs per-type default export dirs (the real bindings live in src/ipc/gen)
+bindings/
