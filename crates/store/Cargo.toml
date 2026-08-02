@@ -8,7 +8,7 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
-nameshift-engine = { path = "../engine" }
+nameshift-engine = { path = "../engine", version = "2.0.0" }
 serde.workspace = true
 serde_json.workspace = true
 uuid.workspace = true

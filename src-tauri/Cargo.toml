@@ -16,10 +16,10 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = [] }
-nameshift-engine = { path = "../crates/engine" }
-nameshift-store = { path = "../crates/store" }
-nameshift-watcher = { path = "../crates/watcher" }
-nameshift-metadata = { path = "../crates/metadata" }
+nameshift-engine = { path = "../crates/engine", version = "2.0.0" }
+nameshift-store = { path = "../crates/store", version = "2.0.0" }
+nameshift-watcher = { path = "../crates/watcher", version = "2.0.0" }
+nameshift-metadata = { path = "../crates/metadata", version = "2.0.0" }
 serde.workspace = true
 serde_json.workspace = true
 uuid.workspace = true
