@@ -1,0 +1,12 @@
+dist
+coverage
+node_modules
+src-tauri/gen
+src-tauri/target
+target
+src/ipc/gen
+pnpm-lock.yaml
+# Installed/owner-authored documents stay byte-exact (§0.1, §22.1).
+docs/SPEC.md
+docs/OWNER_CHECKLIST.md
+README.md
