@@ -56,7 +56,7 @@ describe('RuleCard fields (§14.3 per-kind)', () => {
     expect(screen.getByText('Find')).toBeInTheDocument();
     expect(screen.getByText('Replace with')).toBeInTheDocument();
     const fields = screen.getAllByRole('textbox');
-    await user.type(fields[1] as HTMLElement, 'x');
+    await user.type(fields[1]!, 'x');
     expect(onChange).toHaveBeenCalled();
     await user.click(screen.getByRole('checkbox', { name: 'Match case' }));
     expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ caseSensitive: false }));

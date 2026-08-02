@@ -87,14 +87,14 @@ describe('FileListPane (§14.2)', () => {
     const { entries } = seed();
     render(<FileListPane />);
     const rows = screen.getAllByRole('option');
-    await user.click(rows[0] as HTMLElement);
+    await user.click(rows[0]!);
     expect(useUiStore.getState().rowSelection).toEqual(new Set([entries[0]?.id]));
     await user.keyboard('{Control>}');
-    await user.click(rows[2] as HTMLElement);
+    await user.click(rows[2]!);
     await user.keyboard('{/Control}');
     expect(useUiStore.getState().rowSelection.size).toBe(2);
     await user.keyboard('{Shift>}');
-    await user.click(rows[1] as HTMLElement);
+    await user.click(rows[1]!);
     await user.keyboard('{/Shift}');
     // Range from the ⌘-click anchor (row 2) to row 1.
     expect(useUiStore.getState().rowSelection.size).toBe(2);
@@ -104,9 +104,9 @@ describe('FileListPane (§14.2)', () => {
     const user = userEvent.setup();
     const { entries } = seed();
     render(<FileListPane />);
-    await user.click(screen.getAllByRole('option')[0] as HTMLElement);
+    await user.click(screen.getAllByRole('option')[0]!);
     const list = screen.getByRole('listbox');
-    (list as HTMLElement).focus();
+    (list).focus();
     await user.keyboard(' ');
     expect(vi.mocked(commands.setSelectedMany)).toHaveBeenCalledWith([entries[0]?.id], false);
   });
@@ -117,11 +117,11 @@ describe('FileListPane (§14.2)', () => {
     render(<FileListPane />);
     const checkboxes = screen
       .getAllByRole('option')
-      .map((row) => within(row as HTMLElement).getByRole('checkbox'));
-    await user.click(checkboxes[0] as HTMLElement);
+      .map((row) => within(row).getByRole('checkbox'));
+    await user.click(checkboxes[0]!);
     expect(vi.mocked(commands.setSelected)).toHaveBeenCalledWith(entries[0]?.id, false);
     await user.keyboard('{Shift>}');
-    await user.click(checkboxes[3] as HTMLElement);
+    await user.click(checkboxes[3]!);
     await user.keyboard('{/Shift}');
     expect(vi.mocked(commands.setSelectedMany)).toHaveBeenCalledTimes(1);
     expect(vi.mocked(commands.setSelectedMany)).toHaveBeenCalledWith(
@@ -188,8 +188,8 @@ describe('FileListPane (§14.2)', () => {
     const user = userEvent.setup();
     const { entries } = seed();
     render(<FileListPane />);
-    await user.click(screen.getAllByRole('option')[0] as HTMLElement);
-    (screen.getByRole('listbox') as HTMLElement).focus();
+    await user.click(screen.getAllByRole('option')[0]!);
+    (screen.getByRole('listbox')).focus();
     await user.keyboard('{Delete}');
     expect(vi.mocked(commands.removeItems)).toHaveBeenCalledWith([entries[0]?.id]);
   });
@@ -199,7 +199,7 @@ describe('FileListPane (§14.2)', () => {
     const { entries } = seed(12);
     render(<FileListPane />);
     useUiStore.setState({ rowSelection: new Set(entries.map((e) => e.id)) });
-    (screen.getByRole('listbox') as HTMLElement).focus();
+    (screen.getByRole('listbox')).focus();
     await user.keyboard('{Delete}');
     expect(vi.mocked(commands.removeItems)).not.toHaveBeenCalled();
     expect(useUiStore.getState().confirm?.title).toBe('Remove 12 files from the list?');
@@ -209,7 +209,7 @@ describe('FileListPane (§14.2)', () => {
     const user = userEvent.setup();
     seed();
     render(<FileListPane />);
-    await user.pointer({ keys: '[MouseRight]', target: screen.getAllByRole('option')[0] as HTMLElement });
+    await user.pointer({ keys: '[MouseRight]', target: screen.getAllByRole('option')[0]! });
     expect(screen.getByRole('menu')).toBeInTheDocument();
     await user.click(screen.getByRole('menuitem', { name: 'Reveal in Finder' }));
     expect(vi.mocked(commands.revealInFileManager)).toHaveBeenCalled();

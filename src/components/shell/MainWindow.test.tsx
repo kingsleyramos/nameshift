@@ -30,7 +30,7 @@ vi.mock('@tanstack/react-virtual', () => ({
 vi.mock('@tauri-apps/plugin-clipboard-manager', () => ({
   writeText: vi.fn(() => Promise.resolve()),
 }));
-vi.mock('../../ipc/commands', async () => {
+vi.mock('../../ipc/commands', () => {
   const actual: Record<string, unknown> = {};
   const names = [
     'importPaths', 'pickAndImport', 'undo', 'redo', 'clearAllOverrides', 'cancelProcessing',
