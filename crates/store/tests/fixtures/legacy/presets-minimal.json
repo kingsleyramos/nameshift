@@ -1,0 +1,9 @@
+[
+  {
+    "id": "5E6F7A8B-9C0D-4E1F-A2B3-C4D5E6F7A8B9",
+    "name": "Minimal fields",
+    "rules": [
+      { "kind": "addPrefix", "text": "x-", "someFutureOption": { "nested": [1, 2] } }
+    ]
+  }
+]

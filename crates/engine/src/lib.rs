@@ -6,6 +6,7 @@
 #![warn(missing_docs)]
 
 pub mod copy;
+pub mod csv;
 pub mod diffkey;
 pub mod execute;
 pub mod item;
