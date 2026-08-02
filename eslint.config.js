@@ -43,7 +43,17 @@ export default defineConfig(
         'error',
         { ignorePrimitives: { string: true } },
       ],
+      // `invoke<void>(…)` is the canonical Tauri command signature.
+      '@typescript-eslint/no-invalid-void-type': ['error', { allowInGenericTypeArguments: true }],
+      // Counts inside copy templates are the whole point of §A strings.
+      '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
     },
+  },
+  {
+    // `invoke<void>` is the canonical Tauri command signature; the rule
+    // misfires on it here despite allowInGenericTypeArguments.
+    files: ['src/ipc/commands.ts'],
+    rules: { '@typescript-eslint/no-invalid-void-type': 'off' },
   },
   {
     // The config file itself is plain JS; typed rules don't apply cleanly.
