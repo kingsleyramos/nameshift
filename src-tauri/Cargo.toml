@@ -1,0 +1,35 @@
+[package]
+name = "nameshift"
+description = "Name Shift — bulk-rename files and folders with live preview and full undo history"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[lib]
+name = "nameshift_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+nameshift-engine = { path = "../crates/engine" }
+nameshift-store = { path = "../crates/store" }
+nameshift-watcher = { path = "../crates/watcher" }
+nameshift-metadata = { path = "../crates/metadata" }
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+tracing.workspace = true
+
+[features]
+# Distribution channels (§20). Exactly one is active per build; `channel-direct`
+# is the default and the only one that compiles the updater.
+default = ["channel-direct"]
+channel-direct = []
+channel-mas = []
+channel-msstore = []
+channel-flathub = []
