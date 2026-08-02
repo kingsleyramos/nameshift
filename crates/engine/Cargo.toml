@@ -20,3 +20,13 @@ icu_properties = "2.2.0"
 ts-rs = { version = "12.0.1", features = ["uuid-impl", "chrono-impl", "serde-json-impl"] }
 chrono = { version = "0.4.45", features = ["serde"] }
 icu_collator = "2.2.1"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+libc = "0.2.189"
+
+[target."cfg(windows)".dependencies]
+windows-sys = { version = "0.61.2", features = ["Win32_Storage_FileSystem", "Win32_Foundation"] }
+
+[dev-dependencies]
+proptest = "1.11.0"
+tempfile = "3.27.0"

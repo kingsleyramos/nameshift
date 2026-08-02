@@ -82,6 +82,35 @@ pub static LINUX_PROFILE: PlatformProfile = PlatformProfile {
     nfc_normalize_keys: false,
 };
 
+/// Windows: convert a path to `\\?\` verbatim form so deep trees and
+/// 255-char names work regardless of the system MAX_PATH setting (§16.1).
+/// Every filesystem call routes through this helper. Already-verbatim and
+/// relative paths pass through unchanged.
+#[cfg(windows)]
+pub fn win_long_path(path: &std::path::Path) -> std::path::PathBuf {
+    use std::path::{Component, Prefix};
+    match path.components().next() {
+        Some(Component::Prefix(prefix)) => match prefix.kind() {
+            Prefix::Verbatim(_) | Prefix::VerbatimDisk(_) | Prefix::VerbatimUNC(..) => {
+                path.to_path_buf()
+            }
+            Prefix::UNC(..) => {
+                let raw = path.to_string_lossy();
+                std::path::PathBuf::from(format!(r"\\?\UNC{}", &raw[1..]))
+            }
+            _ => std::path::PathBuf::from(format!(r"\\?\{}", path.display())),
+        },
+        // Relative paths can't take the verbatim prefix; leave them alone.
+        _ => path.to_path_buf(),
+    }
+}
+
+/// Non-Windows: paths are used as-is.
+#[cfg(not(windows))]
+pub fn win_long_path(path: &std::path::Path) -> std::path::PathBuf {
+    path.to_path_buf()
+}
+
 /// The profile for the OS this binary runs on.
 pub fn host_profile() -> &'static PlatformProfile {
     #[cfg(target_os = "macos")]
