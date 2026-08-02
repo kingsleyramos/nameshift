@@ -15,6 +15,7 @@ cargo test --workspace    # engine/store/watcher/metadata: unit + on-disk + prop
 pnpm test                 # frontend component tests (Vitest); add --coverage for the gate
 pnpm lint && pnpm typecheck
 pnpm verify               # the full §0.1(4) self-verification loop
+pnpm verify:ci            # verify + cargo-deny + cross-OS clippy + e2e install (mirror CI before pushing)
 pnpm tauri build          # release bundle for the host OS
 pnpm tauri build --debug  # bundle smoke
 pnpm e2e                  # WebdriverIO suite (Linux/Windows; macOS uses docs/MANUAL_TESTING.md)
@@ -98,3 +99,11 @@ smoke sets `minify:false`, so only `pnpm build` exercises the production
 minifier — keep it in the gate. Each non-default channel
 (`channel-mas`/`-msstore`/`-flathub`) is compile-checked on its target OS,
 because its code is gated behind `cfg(feature)` and no other job builds it.
+
+`pnpm verify:ci` (`scripts/verify-ci.sh`) is the local mirror of the
+CI-only checks — cargo-deny, cross-OS clippy for the pure-Rust crates
+(Windows + Linux targets, catches platform-only lint like a unix-only
+import), and the e2e frozen install. Run it before pushing. It needs
+`cargo install cargo-deny` once; the Rust targets install on first run. The
+one gap is `src-tauri`, whose tauri/wry sys deps can't cross-check off macOS,
+so its per-OS code still relies on the CI Test matrix.
