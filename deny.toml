@@ -6,6 +6,11 @@ all-features = true
 [advisories]
 version = 2
 yanked = "deny"
+# Only fail on unmaintained crates we depend on directly. The transitive ones
+# are unavoidable: gtk-rs GTK3 bindings (Tauri/webkit2gtk on Linux), the unic-*
+# Unicode crates, and proc-macro-error all come in through upstream deps we
+# don't control. Security vulnerabilities still fail regardless of this setting.
+unmaintained = "workspace"
 
 [licenses]
 version = 2
@@ -20,6 +25,7 @@ allow = [
   "ISC",
   "MPL-2.0",
   "Unicode-3.0",
+  "CDLA-Permissive-2.0",
   "Zlib",
 ]
 

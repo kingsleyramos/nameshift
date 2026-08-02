@@ -4,7 +4,7 @@
 
 use std::collections::HashSet;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use nameshift_engine::{
@@ -327,6 +327,7 @@ proptest! {
     fn fuzz_non_utf8_paths_never_panic(bytes in proptest::collection::vec(any::<u8>(), 1..24)) {
         use std::ffi::OsStr;
         use std::os::unix::ffi::OsStrExt;
+        use std::path::PathBuf;
         // Forbid separators/NUL so the bytes stay one path component.
         let cleaned: Vec<u8> =
             bytes.into_iter().map(|b| if b == b'/' || b == 0 { b'_' } else { b }).collect();
