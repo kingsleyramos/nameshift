@@ -109,7 +109,7 @@ export default function PresetsMenu() {
           aria-modal="true"
           aria-label="Preset name exists"
           className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: 'rgb(0 0 0 / 0.25)' }}
+          style={{ background: 'var(--scrim)' }}
         >
           <div
             className="w-96 p-4"
@@ -143,8 +143,8 @@ export default function PresetsMenu() {
                   void commands.savePreset(collision, 'replace');
                   setCollision(null);
                 }}
-                className="h-7 rounded-md px-3 text-[13px] font-semibold text-white"
-                style={{ background: 'var(--accent)' }}
+                className="h-7 rounded-md px-3 text-[13px] font-semibold"
+                style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
               >
                 Replace
               </button>
@@ -158,7 +158,7 @@ export default function PresetsMenu() {
           aria-modal="true"
           aria-label="Save preset"
           className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: 'rgb(0 0 0 / 0.25)' }}
+          style={{ background: 'var(--scrim)' }}
         >
           <div
             className="w-80 p-4"
@@ -201,8 +201,8 @@ export default function PresetsMenu() {
                   void savePreset();
                 }}
                 disabled={name.trim().length === 0}
-                className="h-7 rounded-md px-3 text-[13px] font-semibold text-white disabled:opacity-40"
-                style={{ background: 'var(--accent)' }}
+                className="h-7 rounded-md px-3 text-[13px] font-semibold disabled:opacity-40"
+                style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
               >
                 Save
               </button>

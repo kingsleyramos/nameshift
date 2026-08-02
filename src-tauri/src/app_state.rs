@@ -181,6 +181,26 @@ impl Shared {
         self.metadata.invalidate();
     }
 
+    /// Release security scopes nothing references anymore (§10.1): the set
+    /// still needed is the watched roots plus direct imports' parents.
+    /// Call after any mutation that removes items or folders.
+    pub fn release_unused_scopes(&self) {
+        let mut needed: Vec<PathBuf> = self
+            .state
+            .watched_folders
+            .iter()
+            .map(|folder| folder.path.clone())
+            .collect();
+        needed.extend(
+            self.state
+                .files
+                .iter()
+                .filter(|item| item.folder_id.is_none())
+                .filter_map(|item| item.path.parent().map(std::path::Path::to_path_buf)),
+        );
+        self.access.retain_scopes(&needed);
+    }
+
     /// Count of manual overrides in the active mode (§14.4 edited chip).
     pub fn override_count(&self) -> u32 {
         self.state

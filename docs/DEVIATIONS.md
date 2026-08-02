@@ -94,3 +94,13 @@ what shipped, and why. Everything not listed here follows the spec.
     `rust-toolchain.toml`, `pnpm verify`, and the version-sync script are
     developer-QOL additions outside the spec's scope (requested by the
     owner); none affect the product.
+
+17. **Seven files exceed the ~400-line budget (§3).** `commands.rs` (817 —
+    46 near-identical command shims; splitting them across modules would
+    scatter the §12.1 list without making any shim simpler), `rule.rs`
+    (511 — the ten transforms plus their §4.2 struct), `FileListPane.tsx`
+    (496 — the list, its keyboard model, and its context menu share state),
+    `app_state.rs` (476), `preview.rs` (459), `RuleCard.tsx` (438),
+    `execute.rs` (438), `menu.rs` (437). Each is one cohesive feature;
+    splitting would trade file length for cross-file hops. Revisit any of
+    them if they grow further.

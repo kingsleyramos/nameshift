@@ -23,7 +23,7 @@ export default function ProcessingOverlay({ processing }: { processing: Processi
       aria-modal="true"
       aria-label={processing.title}
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgb(0 0 0 / 0.25)' }}
+      style={{ background: 'var(--scrim)' }}
     >
       <div
         className="flex w-80 flex-col gap-3 p-5"

@@ -110,4 +110,18 @@ impl FileAccess for ScopedAccess {
             .unwrap_or_else(std::sync::PoisonError::into_inner);
         scopes.keys().any(|root| path.starts_with(root))
     }
+
+    fn retain_scopes(&self, needed: &[PathBuf]) {
+        let mut scopes = self
+            .scopes
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        scopes.retain(|root, url| {
+            let still_needed = needed.iter().any(|path| path.starts_with(root));
+            if !still_needed {
+                unsafe { url.stopAccessingSecurityScopedResource() };
+            }
+            still_needed
+        });
+    }
 }
