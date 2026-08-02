@@ -8,7 +8,21 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
+chrono = "0.4.45"
 nameshift-engine = { path = "../engine" }
 serde.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+
+[target.'cfg(target_os = "macos")'.dependencies]
+core-foundation = "0.10.1"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+kamadak-exif = "0.6.1"
+xattr = "1.6.1"
+
+[target."cfg(windows)".dependencies]
+windows = { version = "0.62.2", features = ["Win32_Foundation", "Win32_System_Com", "Win32_System_Com_StructuredStorage", "Win32_System_Variant", "Win32_UI_Shell_PropertiesSystem", "Win32_Storage_FileSystem"] }
+
+[dev-dependencies]
+tempfile = "3.27.0"
