@@ -24,6 +24,13 @@ serde.workspace = true
 serde_json.workspace = true
 uuid.workspace = true
 tracing.workspace = true
+tauri-plugin-dialog = "2.7.2"
+tauri-plugin-clipboard-manager = "2.3.2"
+tauri-plugin-opener = "2.5.4"
+tauri-plugin-single-instance = "2.4.3"
+tauri-plugin-window-state = "2.4.1"
+ts-rs = { version = "12.0.1", features = ["uuid-impl", "chrono-impl"] }
+chrono = "0.4.45"
 
 [features]
 # Distribution channels (§20). Exactly one is active per build; `channel-direct`
