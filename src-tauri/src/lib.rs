@@ -7,8 +7,10 @@ pub mod commands;
 pub mod error;
 pub mod events;
 pub mod help_window;
+pub mod mas;
 pub mod menu;
 pub mod session_glue;
+pub mod updater;
 pub mod watch_glue;
 pub mod worker;
 
@@ -18,7 +20,10 @@ use crate::app_state::AppState;
 
 /// Build and run the Tauri application.
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default();
+    #[cfg(feature = "channel-direct")]
+    let builder = builder.plugin(tauri_plugin_updater::Builder::new().build());
+    builder
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_opener::init())
@@ -41,6 +46,8 @@ pub fn run() {
             app.manage(state);
             session_glue::restore(app.handle());
             menu::install(app.handle())?;
+            #[cfg(feature = "channel-direct")]
+            updater::spawn_background_checks(app.handle().clone());
             Ok(())
         })
         .on_menu_event(|app, event| {
@@ -102,9 +109,10 @@ pub fn run() {
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::Destroyed = event {
                 if window.label() == "main" {
-                    // Session save on exit (§4.3).
+                    // Session save on exit (§4.3) + scoped-resource release.
                     if let Some(state) = window.app_handle().try_state::<AppState>() {
                         state.save_session_now();
+                        state.read(|shared| shared.access.stop_all());
                     }
                 }
             }

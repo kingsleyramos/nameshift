@@ -1,0 +1,14 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "bundle": {
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/kingsleyramos/nameshift/releases/latest/download/latest.json"
+      ],
+      "pubkey": "UPDATER_PUBKEY_PLACEHOLDER_RUN_pnpm_tauri_signer_generate"
+    }
+  }
+}
