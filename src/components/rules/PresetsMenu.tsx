@@ -9,8 +9,11 @@ import { strings } from '../../lib/strings';
 import * as commands from '../../ipc/commands';
 
 export default function PresetsMenu() {
-  const presets = useAppStore((s) => s.snapshot?.presets ?? []);
-  const rules = useAppStore((s) => s.snapshot?.rules ?? []);
+  // Fallbacks live OUTSIDE the selector: a selector that builds a new array
+  // each call re-renders forever under React 19's external-store check
+  // (error #185 — a blank window at launch, when snapshot is still null).
+  const presets = useAppStore((s) => s.snapshot?.presets) ?? [];
+  const rules = useAppStore((s) => s.snapshot?.rules) ?? [];
   const showConfirm = useUiStore((s) => s.showConfirm);
   const [naming, setNaming] = useState(false);
   const [name, setName] = useState('');
