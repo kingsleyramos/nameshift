@@ -12,6 +12,7 @@ import {
   listing,
   makeFixtureDir,
   setRules,
+  dumpUi,
   resetWorkspace,
   waitForRows,
 } from '../fixtures/helpers';
@@ -52,6 +53,10 @@ describe('rename end-to-end', () => {
       await revert.waitForEnabled();
       await revert.click();
       const confirm = await $('button=Revert');
+      await confirm.waitForExist().catch(async (err: unknown) => {
+        await dumpUi('files-revert-confirm');
+        throw err;
+      });
       await confirm.click();
       await browser.waitUntil(() => listing(dir).includes('one.txt'));
       expect(listing(dir)).toEqual(['one.txt', 'two.txt']);
@@ -127,7 +132,12 @@ describe('rename end-to-end', () => {
       const revert = await $('button*=Revert…');
       await revert.waitForEnabled();
       await revert.click();
-      await (await $('button=Revert')).click();
+      const folderConfirm = await $('button=Revert');
+      await folderConfirm.waitForExist().catch(async (err: unknown) => {
+        await dumpUi('folders-revert-confirm');
+        throw err;
+      });
+      await folderConfirm.click();
       await browser.waitUntil(() => listing(dir).includes('Shoot'));
     } finally {
       cleanup(dir);

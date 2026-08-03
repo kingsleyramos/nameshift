@@ -102,10 +102,23 @@ export async function setRules(rules: Record<string, unknown>[]): Promise<void> 
 }
 
 /** Clear the workspace between specs. */
+/** Dump visible buttons + dialog state — diagnostic for selector failures. */
+export async function dumpUi(tag: string): Promise<void> {
+  const dump = await browser.execute(() => ({
+    buttons: Array.from(document.querySelectorAll('button'))
+      .map((b) => b.textContent?.trim() ?? '')
+      .filter(Boolean),
+    dialog: document.querySelector('[role="dialog"]')?.outerHTML.slice(0, 500) ?? 'NO DIALOG',
+  }));
+  console.log(`E2E-UI-DUMP ${tag}`, JSON.stringify(dump));
+}
+
 export async function resetWorkspace(): Promise<void> {
   await invoke('set_rules', { rules: [] });
   await invoke('clear_all');
   await invoke('clear_history');
+  // clear_all keeps view prefs; tests must not leak Folders mode forward.
+  await invoke('set_list_mode', { mode: 'Files' });
   // Reload the page so frontend-only ui state (active tab, row selection,
   // open dialogs) can't leak between tests — each spec starts at launch state.
   await browser.refresh();
