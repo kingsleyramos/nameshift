@@ -64,9 +64,16 @@ describe('rename end-to-end', () => {
       await waitForRows(2);
       // Both rename to the same target → duplicate targets block Apply.
       await setRules([{ kind: 'template', text: 'same' }]);
-      await browser.waitUntil(async () =>
-        (await $('footer').getText()).includes('naming conflict'),
-      );
+      await browser
+        .waitUntil(async () => (await $('footer').getText()).includes('naming conflict'))
+        .catch(async (err: unknown) => {
+          const dump = await browser.execute(() => ({
+            footer: document.querySelector('footer')?.outerHTML.slice(0, 1200) ?? 'NO FOOTER',
+            rows: document.querySelectorAll('[data-row-id]').length,
+          }));
+          console.log('E2E-CONFLICT-DIAG', JSON.stringify(dump));
+          throw err;
+        });
       const skip = await $('button=Skip Conflicted');
       await skip.click();
       // Skipping both leaves nothing to rename; disk is untouched.
@@ -103,7 +110,9 @@ describe('rename end-to-end', () => {
     try {
       fs.mkdirSync(path.join(dir, 'Shoot'));
       fs.writeFileSync(path.join(dir, 'Shoot/img.jpg'), 'x');
-      await invoke('import_paths', { paths: [path.join(dir, 'Shoot')] });
+      // Import the PARENT: watched roots are never rename targets (§9) —
+      // Folders mode lists directories inside them, so 'Shoot' is the target.
+      await invoke('import_paths', { paths: [dir] });
       await browser.waitUntil(async () =>
         (await $('[role="tablist"][aria-label="Scope"]').getText()).includes('Folders · 1'),
       );
