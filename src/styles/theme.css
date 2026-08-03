@@ -15,6 +15,10 @@
   /* The Revert primary button — one color = one verb, app-wide */
   --revert-action: #a34a00;
   --revert-action-text: #ffffff;
+  /* Text/glyphs on accent-filled controls */
+  --on-accent: #ffffff;
+  /* Modal/overlay backdrop */
+  --scrim: rgb(0 0 0 / 0.25);
 
   /* Row washes */
   --wash-selected: color-mix(in srgb, var(--accent) 18%, transparent);
@@ -47,6 +51,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --scrim: rgb(0 0 0 / 0.4);
     --link-text: #6ba5ff;
     --warning-text: #ff9f0a;
     --success-text: #4cc38a;
