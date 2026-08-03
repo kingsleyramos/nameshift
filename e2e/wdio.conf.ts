@@ -26,6 +26,11 @@ export const config: WebdriverIO.Config = {
         application: binary,
       },
       browserName: 'wry',
+      // WebdriverIO 9 negotiates WebDriver BiDi by default, but the
+      // WebKitWebDriver/Edge driver tauri-driver proxies to is classic-only
+      // and rejects the session ("Failed to match capabilities"). Force the
+      // classic protocol.
+      'wdio:enforceWebDriverClassic': true,
     },
   ],
   reporters: ['spec'],
