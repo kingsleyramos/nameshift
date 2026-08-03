@@ -156,7 +156,7 @@ pnpm tauri build    # build a release bundle for your OS
 ```sh
 cargo test --workspace   # engine, persistence, watcher, metadata — unit + on-disk integration + property tests
 pnpm test                # frontend component tests (Vitest)
-pnpm e2e                 # end-to-end suite (Linux & Windows; see docs/MANUAL_TESTING.md for macOS)
+pnpm test:ui             # interface tests (every OS; see docs/TESTING.md)
 ```
 
 The suite includes real-filesystem apply/revert tests, fuzzers, and a round-trip property test (*apply then revert restores the original tree*) — please keep it green.
