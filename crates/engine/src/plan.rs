@@ -101,11 +101,24 @@ pub fn apply_plan(
     is_cancelled: &dyn Fn() -> bool,
     on_progress: &mut dyn FnMut(usize),
 ) -> ApplyOutcome {
-    use crate::execute::{perform_moves_hierarchical, rewrite_live_paths};
-    use crate::item::standardized;
-    use crate::revert::record_snapshot;
+    use crate::execute::perform_moves_hierarchical;
 
     let result = perform_moves_hierarchical(&plan.moves, true, is_cancelled, on_progress);
+    finish_apply(state, plan, &result)
+}
+
+/// §8.5 steps 1–3, 5 (deselect half), 6 — the state-mutating tail of an
+/// Apply. The async worker performs the moves lock-free, then commits
+/// through this under the state lock (compute outside, commit inside —
+/// §12.2).
+pub fn finish_apply(
+    state: &mut CoreState,
+    plan: &ApplyPlan,
+    result: &crate::execute::MoveOutcome,
+) -> ApplyOutcome {
+    use crate::execute::rewrite_live_paths;
+    use crate::item::standardized;
+    use crate::revert::record_snapshot;
 
     // 1–2. Update tracked paths (exact + descendant prefix rewrites).
     let rearmed_folder_ids = rewrite_live_paths(state, &result.succeeded);
@@ -149,7 +162,7 @@ pub fn apply_plan(
     ApplyOutcome {
         renamed: result.succeeded.len() as u32,
         snapshot_id,
-        errors: result.errors,
+        errors: result.errors.clone(),
         rearmed_folder_ids,
         cleared_rules: plan.had_rules && !state.keep_rules_after_apply,
         kept_rules: plan.had_rules && state.keep_rules_after_apply,

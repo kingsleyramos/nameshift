@@ -27,7 +27,7 @@ pub use execute::{
     rewrite_path_prefix, MoveOutcome, TEMP_PREFIX,
 };
 pub use item::{FileItem, FileSortKey, FilterMode, ListMode, WatchedFolder};
-pub use plan::{apply_plan, build_plan, ApplyOutcome, ApplyPlan};
+pub use plan::{apply_plan, build_plan, finish_apply, ApplyOutcome, ApplyPlan};
 pub use platform::{
     host_profile, HostOs, PlatformProfile, LINUX_PROFILE, MACOS_PROFILE, WINDOWS_PROFILE,
 };
