@@ -1,0 +1,8 @@
+# pnpm 11 records build-script approval here. WebdriverIO pulls in
+# edgedriver/geckodriver (postinstall driver downloads) and esbuild; approving
+# their build scripts keeps `pnpm install --frozen-lockfile` from aborting with
+# ERR_PNPM_IGNORED_BUILDS in CI.
+allowBuilds:
+  edgedriver: true
+  esbuild: true
+  geckodriver: true
