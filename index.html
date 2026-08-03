@@ -4,6 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Name Shift</title>
+    <script>
+      // DIAGNOSTIC (test branch only): capture any load/runtime error so e2e can read it.
+      window.__e2eError = '';
+      addEventListener(
+        'error',
+        function (e) {
+          window.__e2eError +=
+            '[error] ' + (e.message || '(resource)') + ' @ ' + (e.filename || '') + ':' + (e.lineno || '') + '\n';
+        },
+        true,
+      );
+      addEventListener('unhandledrejection', function (e) {
+        window.__e2eError += '[reject] ' + e.reason + '\n';
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>
