@@ -108,11 +108,45 @@ impl Shared {
         let version = self.state.version;
         let stale = !matches!(&self.preview_cache, Some((v, _)) if *v == version);
         if stale {
-            let preview =
+            let mut preview =
                 compute_preview(&self.state, host_profile(), &mut self.disk, &self.metadata);
+            self.apply_permission_badges(&mut preview);
             self.preview_cache = Some((version, preview));
         }
         &self.preview_cache.as_ref().expect("just computed").1
+    }
+
+    /// MAS builds (§10.2): items whose folder has no sandbox grant can't be
+    /// renamed — badge them with `NoFolderPermission` and drop them from the
+    /// plan. `covers` is always true on non-MAS channels, so this is a no-op
+    /// there.
+    fn apply_permission_badges(&self, preview: &mut Preview) {
+        let uncovered: Vec<Uuid> = self
+            .state
+            .files
+            .iter()
+            .filter(|item| !self.access.covers(&item.directory()))
+            .map(|item| item.id)
+            .collect();
+        if uncovered.is_empty() {
+            return;
+        }
+        let mut removed_changes = 0u32;
+        for entry in preview
+            .entries
+            .iter_mut()
+            .filter(|entry| uncovered.contains(&entry.id))
+        {
+            entry.problem = Some(nameshift_engine::Problem::NoFolderPermission);
+            if entry.is_changed {
+                entry.new_name = entry.current_name.clone();
+                entry.is_changed = false;
+                removed_changes += 1;
+            }
+        }
+        preview.counts.change_count -= removed_changes.min(preview.counts.change_count);
+        preview.counts.can_apply =
+            preview.counts.change_count > 0 && preview.counts.conflict_count == 0;
     }
 
     /// The cached revert preview for the current version (§8.8); empty when
@@ -145,6 +179,26 @@ impl Shared {
     pub fn invalidate_disk_caches(&mut self) {
         self.disk.invalidate();
         self.metadata.invalidate();
+    }
+
+    /// Release security scopes nothing references anymore (§10.1): the set
+    /// still needed is the watched roots plus direct imports' parents.
+    /// Call after any mutation that removes items or folders.
+    pub fn release_unused_scopes(&self) {
+        let mut needed: Vec<PathBuf> = self
+            .state
+            .watched_folders
+            .iter()
+            .map(|folder| folder.path.clone())
+            .collect();
+        needed.extend(
+            self.state
+                .files
+                .iter()
+                .filter(|item| item.folder_id.is_none())
+                .filter_map(|item| item.path.parent().map(std::path::Path::to_path_buf)),
+        );
+        self.access.retain_scopes(&needed);
     }
 
     /// Count of manual overrides in the active mode (§14.4 edited chip).

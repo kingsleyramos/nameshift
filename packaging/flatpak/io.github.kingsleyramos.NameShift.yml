@@ -1,0 +1,44 @@
+# Flathub manifest (§20.5). Build offline sources for cargo + node with
+# Flathub's builder-tools before submitting:
+#   https://github.com/flatpak/flatpak-builder-tools
+app-id: io.github.kingsleyramos.NameShift
+runtime: org.gnome.Platform
+runtime-version: "47"
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+  - org.freedesktop.Sdk.Extension.node22
+command: nameshift
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --device=dri
+  # --filesystem=host is deliberate (§10.3): the app's whole purpose is
+  # renaming arbitrary user files, and portal-scoped access cannot follow
+  # live folder watching + revert history across sessions. If Flathub review
+  # pushes back, the documented fallback is portal-based import with
+  # persisted document-portal paths — at the cost of watched folders
+  # surviving relaunch.
+  - --filesystem=host
+modules:
+  - name: nameshift
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node22/bin
+      env:
+        CARGO_HOME: /run/build/nameshift/cargo
+    build-commands:
+      # Offline sources (cargo-sources.json / node modules) must be
+      # generated and referenced here per Flathub's builder-tools; the
+      # network-enabled form below documents the intended build.
+      - npm install -g pnpm
+      - pnpm install --frozen-lockfile
+      - pnpm tauri build --no-default-features --features channel-flathub --bundles deb
+      - install -Dm755 target/release/nameshift /app/bin/nameshift
+      - install -Dm644 packaging/linux/io.github.kingsleyramos.NameShift.desktop /app/share/applications/io.github.kingsleyramos.NameShift.desktop
+      - install -Dm644 packaging/linux/io.github.kingsleyramos.NameShift.metainfo.xml /app/share/metainfo/io.github.kingsleyramos.NameShift.metainfo.xml
+      - install -Dm644 src-tauri/icons/128x128.png /app/share/icons/hicolor/128x128/apps/io.github.kingsleyramos.NameShift.png
+    sources:
+      - type: dir
+        path: ../..
