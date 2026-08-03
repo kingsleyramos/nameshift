@@ -12,7 +12,7 @@ import {
   listing,
   makeFixtureDir,
   setRules,
-  dumpUi,
+  clickForDialog,
   resetWorkspace,
   waitForRows,
 } from '../fixtures/helpers';
@@ -47,17 +47,8 @@ describe('rename end-to-end', () => {
       await historyTab.click();
       const version = await $('button*=Prefix “x-”');
       await version.click();
-      // The footer Revert button stays disabled until the revert preview
-      // loads — clicking a disabled button is a silent no-op.
-      const revert = await $('button*=Revert…');
-      await revert.waitForEnabled();
-      await revert.click();
-      const confirm = await $('button=Revert');
-      await confirm.waitForExist().catch(async (err: unknown) => {
-        await dumpUi('files-revert-confirm');
-        throw err;
-      });
-      await confirm.click();
+      await clickForDialog('button*=Revert…');
+      await (await $('button=Revert')).click();
       await browser.waitUntil(() => listing(dir).includes('one.txt'));
       expect(listing(dir)).toEqual(['one.txt', 'two.txt']);
     } finally {
@@ -129,15 +120,8 @@ describe('rename end-to-end', () => {
       await historyTab.click();
       const version = await $('button*=Folders');
       await version.click();
-      const revert = await $('button*=Revert…');
-      await revert.waitForEnabled();
-      await revert.click();
-      const folderConfirm = await $('button=Revert');
-      await folderConfirm.waitForExist().catch(async (err: unknown) => {
-        await dumpUi('folders-revert-confirm');
-        throw err;
-      });
-      await folderConfirm.click();
+      await clickForDialog('button*=Revert…');
+      await (await $('button=Revert')).click();
       await browser.waitUntil(() => listing(dir).includes('Shoot'));
     } finally {
       cleanup(dir);

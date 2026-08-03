@@ -102,6 +102,25 @@ export async function setRules(rules: Record<string, unknown>[]): Promise<void> 
 }
 
 /** Clear the workspace between specs. */
+/**
+ * Click a button until the confirm dialog is actually open. A re-render can
+ * swap the button's DOM node mid-click (e.g. the revert preview arriving),
+ * silently swallowing it — retrying until the dialog exists removes the race.
+ */
+export async function clickForDialog(selector: string): Promise<void> {
+  await browser.waitUntil(
+    async () => {
+      if (await browser.$('[role="dialog"]').isExisting()) return true;
+      const btn = await browser.$(selector);
+      if ((await btn.isExisting()) && (await btn.isEnabled())) {
+        await btn.click();
+      }
+      return await browser.$('[role="dialog"]').isExisting();
+    },
+    { timeoutMsg: `dialog never opened after clicking ${selector}` },
+  );
+}
+
 /** Dump visible buttons + dialog state — diagnostic for selector failures. */
 export async function dumpUi(tag: string): Promise<void> {
   const dump = await browser.execute(() => ({
