@@ -15,9 +15,11 @@ cargo test --workspace    # engine/store/watcher/metadata: unit + on-disk + prop
 pnpm test                 # frontend component tests (Vitest); add --coverage for the gate
 pnpm lint && pnpm typecheck
 pnpm verify               # the full §0.1(4) self-verification loop
+pnpm verify:ci            # verify + cargo-deny + cross-OS clippy + e2e install (mirror CI before pushing)
 pnpm tauri build          # release bundle for the host OS
 pnpm tauri build --debug  # bundle smoke
-pnpm e2e                  # WebdriverIO suite (Linux/Windows; macOS uses docs/MANUAL_TESTING.md)
+pnpm test:ui              # interface tests (Playwright: Chromium + WebKit, every OS)
+pnpm e2e                  # full-stack tauri-driver pass (on demand; Linux/Windows only)
 cargo test -p nameshift --test export_bindings   # regenerate src/ipc/gen after TS-derive changes
 node scripts/check-versions.mjs                  # version sync (package.json is the source)
 # channels:
@@ -91,3 +93,22 @@ pnpm tauri build --no-default-features --features channel-flathub   # manifest i
 Clippy `-D warnings`, rustfmt, ESLint, tsc; `crates/engine` ≥ 85% line
 coverage (cargo-llvm-cov); frontend ≥ 80% lines (vitest); property tests at
 256 cases; cargo-deny advisories/licenses.
+
+The release-mode frontend build (`pnpm build`) and version sync
+(`pnpm check:versions`) run in both `pnpm verify` and CI. The debug bundle
+smoke sets `minify:false`, so only `pnpm build` exercises the production
+minifier — keep it in the gate. Each non-default channel
+(`channel-mas`/`-msstore`/`-flathub`) is compile-checked on its target OS,
+because its code is gated behind `cfg(feature)` and no other job builds it.
+
+`pnpm verify:ci` (`scripts/verify-ci.sh`) is the local mirror of the
+CI-only checks — cargo-deny, cross-OS clippy for the pure-Rust crates,
+and the Playwright interface suite. Run it before pushing; it needs
+`cargo install cargo-deny` once.
+
+Every CI job runs on all three OSes and must pass on all three — no
+`continue-on-error`, no platform conditionals, no skips. The interface
+layer uses Playwright's own Chromium/WebKit so it never depends on the
+host webview. The tauri-driver full-stack pass is deliberately OUT of the
+gate (`.github/workflows/e2e.yml`, on demand) because it cannot run on
+macOS. See docs/TESTING.md.
