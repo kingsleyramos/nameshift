@@ -24,3 +24,7 @@ bindings/
 
 # ts-rs per-type default export dirs (the real bindings live in src/ipc/gen)
 bindings/
+
+# Playwright
+test-results/
+playwright-report/

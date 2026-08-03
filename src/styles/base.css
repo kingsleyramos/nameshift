@@ -7,6 +7,31 @@ body,
   height: 100%;
 }
 
+@keyframes ns-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.ns-help ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.ns-help code {
+  font-size: 12px;
+  background: var(--wash-hover);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+
 body {
   margin: 0;
   font-family:
