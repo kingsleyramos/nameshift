@@ -7,10 +7,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+// Cargo workspace: the binary builds to the workspace-root target dir, not
+// src-tauri/target.
 const binary =
   process.platform === 'win32'
-    ? path.resolve(here, '../src-tauri/target/release/nameshift.exe')
-    : path.resolve(here, '../src-tauri/target/release/nameshift');
+    ? path.resolve(here, '../target/release/nameshift.exe')
+    : path.resolve(here, '../target/release/nameshift');
 
 let tauriDriver: ChildProcess | undefined;
 
