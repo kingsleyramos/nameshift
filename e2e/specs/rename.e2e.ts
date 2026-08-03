@@ -46,7 +46,10 @@ describe('rename end-to-end', () => {
       await historyTab.click();
       const version = await $('button*=Prefix “x-”');
       await version.click();
+      // The footer Revert button stays disabled until the revert preview
+      // loads — clicking a disabled button is a silent no-op.
       const revert = await $('button*=Revert…');
+      await revert.waitForEnabled();
       await revert.click();
       const confirm = await $('button=Revert');
       await confirm.click();
@@ -64,16 +67,10 @@ describe('rename end-to-end', () => {
       await waitForRows(2);
       // Both rename to the same target → duplicate targets block Apply.
       await setRules([{ kind: 'template', text: 'same' }]);
-      await browser
-        .waitUntil(async () => (await $('footer').getText()).includes('naming conflict'))
-        .catch(async (err: unknown) => {
-          const dump = await browser.execute(() => ({
-            footer: document.querySelector('footer')?.outerHTML.slice(0, 1200) ?? 'NO FOOTER',
-            rows: document.querySelectorAll('[data-row-id]').length,
-          }));
-          console.log('E2E-CONFLICT-DIAG', JSON.stringify(dump));
-          throw err;
-        });
+      // Target the action bar by testid — the History panel has a footer too.
+      await browser.waitUntil(async () =>
+        (await $('[data-testid="action-bar"]').getText()).includes('naming conflict'),
+      );
       const skip = await $('button=Skip Conflicted');
       await skip.click();
       // Skipping both leaves nothing to rename; disk is untouched.
@@ -127,7 +124,9 @@ describe('rename end-to-end', () => {
       await historyTab.click();
       const version = await $('button*=Folders');
       await version.click();
-      await (await $('button*=Revert…')).click();
+      const revert = await $('button*=Revert…');
+      await revert.waitForEnabled();
+      await revert.click();
       await (await $('button=Revert')).click();
       await browser.waitUntil(() => listing(dir).includes('Shoot'));
     } finally {

@@ -106,4 +106,10 @@ export async function resetWorkspace(): Promise<void> {
   await invoke('set_rules', { rules: [] });
   await invoke('clear_all');
   await invoke('clear_history');
+  // Reload the page so frontend-only ui state (active tab, row selection,
+  // open dialogs) can't leak between tests — each spec starts at launch state.
+  await browser.refresh();
+  await browser.waitUntil(async () => (await browser.$$('#root > *').getElements()).length > 0, {
+    timeoutMsg: 'app re-rendered after reset',
+  });
 }

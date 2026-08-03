@@ -57,6 +57,7 @@ export default function ActionBar() {
     const versions = (revertPreview?.newerSnapshotCount ?? 0) + 1;
     return (
       <footer
+        data-testid="action-bar"
         className="flex items-center gap-3 px-3 py-2"
         style={{ background: 'var(--window-bg)', borderTop: '1px solid var(--separator)' }}
       >
@@ -103,6 +104,7 @@ export default function ActionBar() {
 
   return (
     <footer
+      data-testid="action-bar"
       className="flex items-center gap-2 px-3 py-2"
       style={{ background: 'var(--window-bg)', borderTop: '1px solid var(--separator)' }}
     >
