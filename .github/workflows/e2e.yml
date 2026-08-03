@@ -1,0 +1,41 @@
+# Full-stack pass: the packaged app driven through tauri-driver, renaming real
+# files on a real disk. Not part of the CI gate — tauri-driver has no macOS
+# support and cannot start a WebView2 session on hosted Windows runners, so it
+# would only ever run on one platform. Trigger it deliberately when a change
+# touches the shell (commands, events, session, watching).
+#
+# Everyday coverage lives in CI: the Rust suites test the engine on all three
+# OSes, and the Interface job tests the real UI on all three.
+
+name: Full-stack E2E (on demand)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: Full-stack E2E (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev webkit2gtk-driver xvfb
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install tauri-driver
+        run: cargo install tauri-driver --locked
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install E2E dependencies
+        run: pnpm --dir e2e install --frozen-lockfile
+      - name: Build release binary
+        run: pnpm tauri build --no-bundle
+      - name: Run E2E under Xvfb
+        run: xvfb-run --auto-servernum pnpm e2e

@@ -34,8 +34,10 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**'],
-      exclude: ['src/ipc/gen/**', 'src/main.tsx'],
+      exclude: ['src/ipc/gen/**', 'src/main.tsx', 'src/test/**'],
       reporter: ['text', 'lcov'],
+      // §18.6 gate: component coverage ≥ 80% lines.
+      thresholds: { lines: 80 },
     },
   },
 });
