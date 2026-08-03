@@ -29,6 +29,19 @@ node scripts/check-versions.mjs
 4. Review the draft's artifacts, then **Publish** — publishing is what makes
    the updater endpoint serve the new version.
 
+Before publishing, verify the macOS artifact on a real Mac. These need a
+signed, notarized build, so no runner can do them:
+
+- [ ] Download the `.dmg` from the draft release (download it — copying it
+      locally skips the quarantine flag that Gatekeeper checks). It opens with
+      no warning.
+- [ ] The app renames a file and quits cleanly.
+- [ ] The window looks right in the real WKWebView — no clipped text or
+      overlapping controls, light and dark mode both readable. The interface
+      suite uses Playwright's WebKit, which is close but not identical.
+- [ ] Dragging files from Finder onto the window, and onto the Dock icon,
+      imports them.
+
 Signing (all optional until configured — unsigned artifacts still build):
 
 | Secret | Purpose |
@@ -50,6 +63,15 @@ Follow `packaging/mas/README.md` (build `channel-mas`, sign with Apple
 Distribution, `productbuild`, upload with Transporter). First-time setup —
 certificates, provisioning profile, App Store Connect record — is in the same
 runbook.
+
+Verify on the sandboxed build before uploading — the sandbox only behaves this
+way in a store build:
+
+- [ ] Importing loose files prompts "To rename these files, allow access to
+      their folder." Declining leaves the rows flagged with the permission
+      badge.
+- [ ] Granting access, then quitting and relaunching, keeps it without
+      re-prompting (the security-scoped bookmarks survive).
 
 ## 3. Microsoft Store
 

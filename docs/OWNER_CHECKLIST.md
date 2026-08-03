@@ -46,7 +46,7 @@ Until these exist, CI still works — it just produces unsigned artifacts.
 
 ## 4. Verification passes — before shipping each channel
 
-- [ ] **macOS:** work through `docs/MANUAL_TESTING.md` on a real build (the E2E suite can't run on macOS).
+- [ ] **macOS:** the signed-build checks in `docs/RELEASING.md` (Gatekeeper, real Finder drag, MAS sandbox prompts). Everything else is automated on all three OSes — see `docs/TESTING.md`.
 - [ ] **Windows (one day, on your Windows machine):** install the CI installer artifact and use the app on real files; then clone the repo (Rust + Node + pnpm + VS Build Tools C++ workload) and run `pnpm e2e` locally; run `packaging/msix/make-msix.ps1`.
 - [ ] **Linux:** install the AppImage in a VM or WSL2, smoke-test import → apply → revert.
 
