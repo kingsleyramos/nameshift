@@ -52,19 +52,30 @@ export async function waitForRows(count: number): Promise<void> {
       const rows = await browser.$$('[data-row-id]').getElements();
       return rows.length === count;
     },
-    {
-      timeoutMsg: `expected ${count} rows`,
-      timeout: 8000,
-    },
+    { timeoutMsg: `expected ${count} rows`, timeout: 8000 },
   ).catch(async (err: unknown) => {
-    // DIAGNOSTIC: dump what actually rendered so we can see mount/state state.
-    const diag = await browser.execute(() => ({
-      rootLen: document.querySelector('#root')?.innerHTML.length ?? -1,
-      hasFileList: !!document.querySelector('[data-testid="file-list"]'),
-      rows: document.querySelectorAll('[data-row-id]').length,
-      bodyHead: document.body.innerHTML.slice(0, 800),
-    }));
+    // DIAGNOSTIC: why doesn't React mount? Capture scripts + any load/JS error.
+    const diag = await browser.execute(() => {
+      const scripts = Array.from(document.querySelectorAll('script')).map((s) => ({
+        src: (s as HTMLScriptElement).src,
+        type: (s as HTMLScriptElement).type,
+      }));
+      return {
+        rootLen: document.querySelector('#root')?.innerHTML.length ?? -1,
+        headHtml: document.head.innerHTML.slice(0, 600),
+        scripts,
+        // @ts-expect-error diagnostic global
+        capturedError: String(window.__e2eError ?? 'none'),
+      };
+    });
+    let logs: unknown = 'unavailable';
+    try {
+      logs = await browser.getLogs('browser');
+    } catch {
+      /* driver may not support logs */
+    }
     console.log('E2E-DIAG', JSON.stringify(diag));
+    console.log('E2E-LOGS', JSON.stringify(logs).slice(0, 1500));
     throw err;
   });
 }
