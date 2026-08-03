@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AppStream metadata shared by the deb/rpm bundles and Flathub (§20.5). -->
+<component type="desktop-application">
+  <id>io.github.kingsleyramos.NameShift</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Name Shift</name>
+  <summary>Bulk-rename files and folders with a live preview</summary>
+  <description>
+    <p>
+      Name Shift renames many files (and folders) at once. Stack up rename
+      rules, watch a live before → after preview of every name, and press
+      Rename. Every batch is saved as a version you can preview and revert.
+    </p>
+    <p>
+      Safety is the brand: renames run in two phases so name swaps and
+      case-only renames can never collide, naming conflicts are detected and
+      block renaming until fixed, and the full history can be rolled back.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.kingsleyramos.NameShift.desktop</launchable>
+  <url type="homepage">https://github.com/kingsleyramos/nameshift</url>
+  <url type="bugtracker">https://github.com/kingsleyramos/nameshift/issues</url>
+  <developer id="io.github.kingsleyramos">
+    <name>Kingsley Ramos</name>
+  </developer>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="2.0.0" date="2026-08-01" />
+  </releases>
+</component>

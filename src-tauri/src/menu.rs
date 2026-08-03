@@ -118,6 +118,14 @@ pub fn install(app: &AppHandle) -> tauri::Result<()> {
             "F1"
         }),
     )?;
+    #[cfg(feature = "channel-direct")]
+    let check_updates = MenuItem::with_id(
+        app,
+        "check-updates",
+        "Check for Updates…",
+        true,
+        None::<&str>,
+    )?;
 
     let file_menu = Submenu::with_items(
         app,
@@ -173,6 +181,9 @@ pub fn install(app: &AppHandle) -> tauri::Result<()> {
 
     let view_menu = Submenu::with_items(app, "View", true, &[&file_info, &inline_diff])?;
 
+    #[cfg(feature = "channel-direct")]
+    let help_menu = Submenu::with_items(app, "Help", true, &[&help, &check_updates])?;
+    #[cfg(not(feature = "channel-direct"))]
     let help_menu = Submenu::with_items(app, "Help", true, &[&help])?;
 
     #[cfg(target_os = "macos")]
@@ -412,6 +423,8 @@ pub fn on_menu_event(app: &AppHandle, id: &str) {
         "toggle-inspector" => forward("toggle-inspector"),
         "inline-diff" => forward("inline-diff"),
         "settings" => crate::help_window::open_settings(app),
+        #[cfg(feature = "channel-direct")]
+        "check-updates" => crate::updater::check_interactive(app.clone()),
         "main-window" => {
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.show();

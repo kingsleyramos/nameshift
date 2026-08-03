@@ -24,6 +24,18 @@ pub trait FileAccess: Send + Sync {
 
     /// Release scoped resources on shutdown.
     fn stop_all(&self);
+
+    /// Whether an existing grant covers this path. Renaming is a move within
+    /// the parent directory, so MAS needs a DIRECTORY grant (§10.2); plain
+    /// paths cover everything.
+    fn covers(&self, _path: &Path) -> bool {
+        true
+    }
+
+    /// Release scopes that no longer serve any `needed` path — the OS caps
+    /// simultaneously-open scoped resources, so scopes for items removed
+    /// from the list must not accumulate (§10.1). No-op for plain paths.
+    fn retain_scopes(&self, _needed: &[PathBuf]) {}
 }
 
 /// Plain-path implementation (default feature `channel-direct`, also
@@ -45,9 +57,16 @@ impl FileAccess for DirectAccess {
     fn stop_all(&self) {}
 }
 
-/// The access implementation for the active channel. The MAS `ScopedAccess`
-/// (objc2 security-scoped bookmarks) lands with the `channel-mas` feature
-/// (§20.3); every other channel uses plain paths.
+/// The access implementation for the active channel: `ScopedAccess`
+/// (security-scoped bookmarks) under `channel-mas` (§20.3), plain paths
+/// everywhere else.
 pub fn channel_access() -> Box<dyn FileAccess> {
-    Box::new(DirectAccess)
+    #[cfg(feature = "channel-mas")]
+    {
+        Box::new(crate::mas::ScopedAccess::new())
+    }
+    #[cfg(not(feature = "channel-mas"))]
+    {
+        Box::new(DirectAccess)
+    }
 }

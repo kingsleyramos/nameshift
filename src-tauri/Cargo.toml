@@ -31,12 +31,18 @@ tauri-plugin-single-instance = "2.4.3"
 tauri-plugin-window-state = "2.4.1"
 ts-rs = { version = "12.0.1", features = ["uuid-impl", "chrono-impl"] }
 chrono = "0.4.45"
+tauri-plugin-updater = { version = "2.10.1", optional = true }
 
 [features]
 # Distribution channels (§20). Exactly one is active per build; `channel-direct`
-# is the default and the only one that compiles the updater.
+# is the default and the only one that compiles the updater; `channel-mas`
+# is the only one that compiles security-scoped bookmarks (§10).
 default = ["channel-direct"]
-channel-direct = []
-channel-mas = []
+channel-direct = ["dep:tauri-plugin-updater"]
+channel-mas = ["dep:objc2", "dep:objc2-foundation"]
 channel-msstore = []
 channel-flathub = []
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = { version = "0.6.4", optional = true }
+objc2-foundation = { version = "0.3.2", features = ["NSURL", "NSData", "NSString", "NSError"], optional = true }
