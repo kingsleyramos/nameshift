@@ -7,6 +7,7 @@ pub mod commands;
 pub mod error;
 pub mod events;
 pub mod help_window;
+pub mod menu;
 pub mod session_glue;
 pub mod watch_glue;
 pub mod worker;
@@ -39,7 +40,11 @@ pub fn run() {
             let state = AppState::new(app.handle().clone(), store, access::channel_access());
             app.manage(state);
             session_glue::restore(app.handle());
+            menu::install(app.handle())?;
             Ok(())
+        })
+        .on_menu_event(|app, event| {
+            menu::on_menu_event(app, event.id().as_ref());
         })
         .invoke_handler(tauri::generate_handler![
             commands::get_state,
@@ -104,6 +109,23 @@ pub fn run() {
                 }
             }
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            // macOS dock drops and Finder “Open With” arrive here (§12.2
+            // `open-paths`); the frontend feeds them to the import gate.
+            #[cfg(target_os = "macos")]
+            if let tauri::RunEvent::Opened { urls } = event {
+                let paths: Vec<String> = urls
+                    .into_iter()
+                    .filter_map(|url| url.to_file_path().ok())
+                    .map(|path| path.to_string_lossy().into_owned())
+                    .collect();
+                if !paths.is_empty() {
+                    let _ = app.emit(events::OPEN_PATHS, events::OpenPaths { paths });
+                }
+            }
+            #[cfg(not(target_os = "macos"))]
+            let _ = (&app, &event);
+        });
 }
