@@ -52,8 +52,21 @@ export async function waitForRows(count: number): Promise<void> {
       const rows = await browser.$$('[data-row-id]').getElements();
       return rows.length === count;
     },
-    { timeoutMsg: `expected ${count} rows` },
-  );
+    {
+      timeoutMsg: `expected ${count} rows`,
+      timeout: 8000,
+    },
+  ).catch(async (err: unknown) => {
+    // DIAGNOSTIC: dump what actually rendered so we can see mount/state state.
+    const diag = await browser.execute(() => ({
+      rootLen: document.querySelector('#root')?.innerHTML.length ?? -1,
+      hasFileList: !!document.querySelector('[data-testid="file-list"]'),
+      rows: document.querySelectorAll('[data-row-id]').length,
+      bodyHead: document.body.innerHTML.slice(0, 800),
+    }));
+    console.log('E2E-DIAG', JSON.stringify(diag));
+    throw err;
+  });
 }
 
 /** Replace the whole rule stack (idempotent editing path). */
