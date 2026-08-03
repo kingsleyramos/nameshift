@@ -177,5 +177,32 @@ pub fn import_paths(app: &AppHandle, raw_paths: Vec<String>) {
     for id in new_folder_ids {
         rescan_one(app, id);
     }
+
+    // MAS only (§10.2): renaming needs the DIRECTORY, so loose-file imports
+    // whose parent isn't covered by a grant prompt for one immediately.
+    // Declining leaves the files listed with the permission badge.
+    #[cfg(feature = "channel-mas")]
+    {
+        use tauri_plugin_dialog::DialogExt;
+        let uncovered: Vec<PathBuf> = state.read(|shared| {
+            parents
+                .iter()
+                .filter(|parent| !shared.access.covers(parent))
+                .cloned()
+                .collect()
+        });
+        for parent in uncovered {
+            let picked = app
+                .dialog()
+                .file()
+                .set_directory(&parent)
+                .set_title("To rename these files, allow access to their folder.")
+                .blocking_pick_folder();
+            if let Some(path) = picked.and_then(|p| p.into_path().ok()) {
+                state.mutate(|shared| shared.access.note_user_granted(&path));
+            }
+        }
+    }
+
     state.save_session_now();
 }
